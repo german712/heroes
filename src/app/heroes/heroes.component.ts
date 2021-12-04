@@ -1,0 +1,119 @@
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+import { HeroesService } from '../core/services/heroes.service';
+import { ConfirmModalComponent } from '../shared/components/confirm-modal/confirm-modal.component';
+import { PaginationTableData } from '../shared/components/paginator/paginator.component';
+import { TableColumn } from '../shared/components/table/table.component';
+import { Hero } from '../shared/models/hero-model';
+import { HeroesFormComponent } from './heroes-form/heroes-form.component';
+
+@Component({
+  selector: 'app-heroes',
+  templateUrl: './heroes.component.html',
+  styleUrls: ['./heroes.component.scss'],
+})
+export class HeroesComponent implements OnInit {
+  @ViewChild('actionColumn') actionColumn: TemplateRef<HTMLDivElement>;
+  heroes: Hero[];
+  unsubscribe$ = new Subject<void>();
+  destroyDialog$: Subject<any> = new Subject<void>();
+  columns: TableColumn[];
+  pagination: PaginationTableData = { total: 10, offset: 0, pageSize: 10 };
+  searchField: FormControl = new FormControl();
+  constructor(
+    private heroesService: HeroesService,
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit(): void {
+    this.columns = [
+      { header: 'NAME', value: 'name' },
+      { header: 'DESCRIPTION', value: 'description' },
+      { header: 'AGE', value: 'age', width: '20%' },
+      { header: 'WEAKNESS', value: 'weakness' },
+      { header: '', value: 'actions', width: '10%' },
+    ];
+    this.updateView();
+    this.searchField.valueChanges
+      .pipe(takeUntil(this.unsubscribe$), debounceTime(300))
+      .subscribe((term) => {
+        this.pagination.offset = 0;
+        this.updateView();
+      });
+  }
+
+  async onDeleteRow(hero: Hero) {
+    if (await this.openAlert('', `You want to delete ${hero.name}?`)) {
+      this.heroesService
+        .deleteHero(hero.id!)
+        .subscribe(() => this.updateView());
+    }
+  }
+  async openAlert(message: string, title?: string): Promise<string> {
+    return this.dialog
+      .open(ConfirmModalComponent, {
+        minWidth: 325,
+        data: {
+          buttons: ['confirm'],
+          title: title,
+          body: message,
+        },
+      })
+      .afterClosed()
+      .toPromise();
+  }
+
+  onPageChange(pagination: any): void {
+    this.pagination.total = pagination.total;
+    this.pagination.pageSize = pagination.pageSize;
+    this.pagination.offset = pagination.offset;
+    this.updateView();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.unsubscribe();
+    this.destroyDialog$.unsubscribe();
+  }
+
+  updateView() {
+    this.heroesService
+      .getHeroes({
+        filters: { name: this.searchField.value },
+      })
+      .subscribe((heroes) => {
+        this.pagination.total = heroes.length;
+        const total =
+          this.pagination.offset === this.pagination.pageSize
+            ? this.pagination.total
+            : this.pagination.pageSize;
+        this.heroes = heroes.slice(this.pagination.offset, total);
+      });
+  }
+
+  submit(hero: Hero) {
+    if (hero.id) {
+      this.heroesService.updateHero(hero).subscribe(() => this.updateView());
+    } else {
+      this.heroesService.createHero(hero).subscribe(() => this.updateView());
+    }
+  }
+
+  openModal(hero?: Hero) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.minWidth = '25%';
+    dialogConfig.height = '55%';
+    dialogConfig.panelClass = 'dynamic-form-dialog-container';
+    dialogConfig.data = hero;
+
+    this.dialog
+      .open(HeroesFormComponent, dialogConfig)
+      .afterClosed()
+      .pipe(takeUntil(this.destroyDialog$))
+      .subscribe((data) => {
+        if (data) this.submit(data);
+      });
+  }
+}

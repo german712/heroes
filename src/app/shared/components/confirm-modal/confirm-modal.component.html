@@ -1,0 +1,14 @@
+<div class="confirmation-modal">
+  <h2>{{ title }}</h2>
+  <p>{{ body }}</p>
+  <div class="buttons">
+    <button
+      mat-button
+      disableRipple="true"
+      *ngFor="let label of buttons"
+      (click)="buttonClicked(label)"
+    >
+      {{ label.toUpperCase() }}
+    </button>
+  </div>
+</div>

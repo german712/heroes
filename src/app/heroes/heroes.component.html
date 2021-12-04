@@ -1,0 +1,31 @@
+<div class="container">
+  <div id="wrapperHeader">
+    <mat-form-field appearance="outline">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        placeholder="Hero name"
+        [formControl]="searchField"
+        autocomplete="off"
+      />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <button
+      id="addButton"
+      mat-raised-button
+      color="accent"
+      (click)="openModal()"
+    >
+      Add hero
+    </button>
+  </div>
+  <app-table
+    [dataSource]="heroes"
+    [columns]="columns"
+    [paginationData]="pagination"
+    (onDelete)="onDeleteRow($event)"
+    (onEdit)="openModal($event)"
+    (updatePage)="onPageChange($event)"
+  ></app-table>
+</div>

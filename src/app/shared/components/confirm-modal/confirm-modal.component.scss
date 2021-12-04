@@ -1,0 +1,30 @@
+:host {
+  .confirmation-modal {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+
+    h2 {
+      font: normal normal normal 24px/24px Roboto;
+      letter-spacing: 0.22px;
+    }
+
+    p {
+      font: normal normal normal 14px/20px Roboto;
+      letter-spacing: 0.25px;
+    }
+
+    .buttons {
+      align-self: flex-end;
+      button {
+        width: 85px;
+        height: 26px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  ::ng-deep .mat-button-focus-overlay {
+    display: none;
+  }
+}

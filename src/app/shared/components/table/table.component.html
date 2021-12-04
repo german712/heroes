@@ -1,0 +1,29 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <ng-container *ngFor="let column of columns" [matColumnDef]="column.value!">
+    <ng-container *ngIf="column.value !== 'actions'; else actions">
+      <th mat-header-cell *matHeaderCellDef [style.width]="column.width">
+        {{ column.header }}
+      </th>
+      <td mat-cell *matCellDef="let row">
+        {{ getObjectValue(row, column.value!) }}
+      </td>
+    </ng-container>
+    <ng-template #actions>
+      <th mat-header-cell *matHeaderCellDef [style.width]="column.width"></th>
+      <td mat-cell *matCellDef="let element">
+        <mat-icon class="actionIcons" (click)="onDeleteRow(element)"
+          >delete</mat-icon
+        >
+        <mat-icon class="actionIcons" (click)="onEditRow(element)"
+          >edit</mat-icon
+        >
+      </td>
+    </ng-template>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+<app-paginator
+  [pagination]="paginationData"
+  (updatePage)="onUpdatePage($event)"
+></app-paginator>

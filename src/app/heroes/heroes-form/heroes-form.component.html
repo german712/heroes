@@ -1,0 +1,107 @@
+<header class="block-headers">
+  <h1>{{ formTitle }}</h1>
+</header>
+<div class="block">
+  <form [formGroup]="form" autocomplete="off">
+    <mat-grid-list [cols]="1" rowHeight="100px">
+      <!-- Type Text -->
+      <mat-grid-tile>
+        <mat-form-field appearance="fill" class="input-wraper">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Name"
+            formControlName="name"
+            appUppercase
+          />
+          <mat-error *ngIf="form.get('name')?.hasError('required')">
+            This field is required.
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list [cols]="1" rowHeight="100px">
+      <!-- Type Text -->
+      <mat-grid-tile>
+        <mat-form-field appearance="fill" class="input-wraper">
+          <mat-label>Age</mat-label>
+          <input
+            matInput
+            type="number"
+            placeholder="Age"
+            formControlName="age"
+          />
+          <mat-error *ngIf="form.get('age')?.hasError('maxlength')">
+            The maximum length for the age is 255 characters.
+          </mat-error>
+          <mat-error *ngIf="form.get('age')?.hasError('pattern')">
+            The value must be an integer.
+          </mat-error>
+          <mat-error *ngIf="form.get('age')?.hasError('required')">
+            This field is required.
+          </mat-error>
+          <mat-error *ngIf="form.get('age')?.hasError('max')">
+            The value is out of range.
+          </mat-error>
+          <mat-error *ngIf="form.get('age')?.hasError('min')">
+            The value must be positive.
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list [cols]="1" rowHeight="100px">
+      <!-- Type Text -->
+      <mat-grid-tile>
+        <mat-form-field appearance="fill" class="input-wraper">
+          <mat-label>Description</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Description"
+            formControlName="description"
+          />
+          <mat-error *ngIf="form.get('description')?.hasError('required')">
+            This field is required.
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list [cols]="1" rowHeight="100px">
+      <!-- Type Text -->
+      <mat-grid-tile>
+        <mat-form-field appearance="fill" class="input-wraper">
+          <mat-label>Weakness</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Weakness"
+            formControlName="weakness"
+          />
+          <mat-error *ngIf="form.get('weakness')?.hasError('required')">
+            This field is required.
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <div class="button-wrapper">
+      <button
+        id="addButton"
+        mat-raised-button
+        color="accent"
+        (click)="cancel()"
+      >
+        CLOSE
+      </button>
+      <button
+        [disabled]="form.invalid"
+        id="addButton"
+        mat-raised-button
+        color="primary"
+        (click)="submit()"
+      >
+        {{ formTitle }}
+      </button>
+    </div>
+  </form>
+</div>

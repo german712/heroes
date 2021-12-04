@@ -1,0 +1,18 @@
+.container {
+  padding: 20px 70px;
+}
+.mat-button {
+  text-transform: uppercase;
+  padding: 0 25px 0 25px;
+  height: 32px;
+  border-radius: 2px;
+  line-height: 0;
+}
+#addButton {
+  position: absolute;
+  right: 0;
+  bottom: 15px;
+}
+#wrapperHeader {
+  position: relative;
+}
