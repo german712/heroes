@@ -7,9 +7,40 @@ import {
 } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
-import { HEROES } from '../core/mocks/heroes-mock';
 import { HeroesServiceMock } from '../core/mocks/heroes-service-mock';
+import { HeroesService } from '../core/services/heroes.service';
+import { LoadingComponent } from '../shared/components/loading/loading.component';
 import { HeroesComponent } from './heroes.component';
+const HEROES = [
+  {
+    id: 'id_01',
+    name: 'Superman',
+    age: 29,
+    description: 'the last survivor of krypton',
+    weakness: 'kryptonite',
+  },
+  {
+    id: 'id_02',
+    name: 'Batman',
+    age: 30,
+    description: 'heir to the wayne fortune',
+    weakness: 'no killing',
+  },
+  {
+    id: 'id_03',
+    name: 'Robin',
+    age: 13,
+    description: "batman's helper and friend",
+    weakness: 'not to strong',
+  },
+  {
+    id: 'id_04',
+    name: 'Spiderman',
+    age: 15,
+    description: 'bitten by a radioactive spider',
+    weakness: 'inexperience',
+  },
+];
 
 fdescribe('HeroesComponent', () => {
   let component: HeroesComponent;
@@ -25,9 +56,10 @@ fdescribe('HeroesComponent', () => {
   beforeEach(async () => {
     heroesServiceMock = new HeroesServiceMock();
     await TestBed.configureTestingModule({
-      declarations: [HeroesComponent],
+      declarations: [HeroesComponent, LoadingComponent],
       imports: [MatDialogModule, BrowserAnimationsModule],
       providers: [
+        { provide: HeroesService, useValue: heroesServiceMock },
         { provide: MatDialogRef, useValue: dialog },
         { provide: MAT_DIALOG_DATA, useValue: model },
       ],
@@ -40,10 +72,11 @@ fdescribe('HeroesComponent', () => {
     );
     fixture = TestBed.createComponent(HeroesComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should populate table when component init', async () => {
+  it('should populate table when component init', () => {
+    heroesServiceMock.getHeroes.and.returnValue(of({ data: HEROES }));
+    fixture.detectChanges();
     // Assert
     expect(component.heroes).toEqual(HEROES);
   });

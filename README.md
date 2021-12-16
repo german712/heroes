@@ -1,4 +1,5 @@
 # Heroes
+Start the project with npm run start (this will start the project and de mock api)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.0.3.
 

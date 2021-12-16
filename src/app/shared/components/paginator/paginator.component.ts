@@ -8,7 +8,6 @@ export interface PaginationTableData {
 @Component({
   selector: 'app-paginator',
   templateUrl: './paginator.component.html',
-  styleUrls: ['./paginator.component.scss'],
 })
 export class PaginatorComponent implements OnInit {
   @Output() updatePage = new EventEmitter();
@@ -18,7 +17,7 @@ export class PaginatorComponent implements OnInit {
   ngOnInit(): void {}
   public onPageSizeChange(event: any): void {
     this.pagination.total = event.length;
-    this.pagination.offset = event.pageSize * event.pageIndex;
+    this.pagination.offset = event.pageIndex + 1;
     this.pagination.pageSize = event.pageSize;
     this.updatePage.emit(this.pagination);
   }

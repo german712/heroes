@@ -1,9 +1,10 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HeroesService } from '../core/services/heroes.service';
+import { LoadingService } from '../core/services/loading.service';
 import { ConfirmModalComponent } from '../shared/components/confirm-modal/confirm-modal.component';
 import { PaginationTableData } from '../shared/components/paginator/paginator.component';
 import { TableColumn } from '../shared/components/table/table.component';
@@ -21,14 +22,17 @@ export class HeroesComponent implements OnInit {
   unsubscribe$ = new Subject<void>();
   destroyDialog$: Subject<any> = new Subject<void>();
   columns: TableColumn[];
+  loading: Observable<boolean>;
   pagination: PaginationTableData = { total: 10, offset: 0, pageSize: 10 };
   searchField: FormControl = new FormControl();
   constructor(
     private heroesService: HeroesService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
+    this.loading = this.loadingService.loading;
     this.columns = [
       { header: 'NAME', value: 'name' },
       { header: 'DESCRIPTION', value: 'description' },
@@ -82,14 +86,13 @@ export class HeroesComponent implements OnInit {
     this.heroesService
       .getHeroes({
         filters: { name: this.searchField.value },
+        offset: this.pagination.offset,
+        count: this.pagination.pageSize,
       })
-      .subscribe((heroes) => {
-        this.pagination.total = heroes.length;
-        const total =
-          this.pagination.offset === this.pagination.pageSize
-            ? this.pagination.total
-            : this.pagination.pageSize;
-        this.heroes = heroes.slice(this.pagination.offset, total);
+      .pipe()
+      .subscribe((res) => {
+        this.pagination.total = res.total;
+        this.heroes = res.data;
       });
   }
 
